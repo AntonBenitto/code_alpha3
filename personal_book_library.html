@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Personal Book Library</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 1000px;
+      margin: auto;
+      background-color: #f9fafb;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+    .controls input, .controls select, .controls button {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1em;
+    }
+    .search-history, .book-list {
+      margin-top: 20px;
+    }
+    .search-history ul {
+      list-style-type: disc;
+      padding-left: 20px;
+    }
+    .search-history li {
+      cursor: pointer;
+      color: #2563eb;
+    }
+    .search-history li:hover {
+      text-decoration: underline;
+    }
+    .book-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 10px;
+      flex: 1 1 calc(30% - 20px);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s;
+    }
+    .book-card:hover {
+      transform: scale(1.03);
+    }
+    .book-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📚 Personal Book Library</h1>
+
+  <div class="controls">
+    <input type="text" id="searchInput" placeholder="Search by title or author">
+    <button onclick="handleSearch()">Search</button>
+    <select id="categorySelect" onchange="handleCategoryChange()">
+      <option value="">All Categories</option>
+      <option value="Fiction">Fiction</option>
+      <option value="Science">Science</option>
+      <option value="Philosophy">Philosophy</option>
+    </select>
+  </div>
+
+  <div class="search-history">
+    <h2>Search History</h2>
+    <ul id="historyList"></ul>
+  </div>
+
+  <div class="book-list">
+    <h2>Books</h2>
+    <div id="bookGrid" class="book-grid"></div>
+  </div>
+
+  <script>
+    const books = [
+      { id: 1, title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', category: 'Fiction' },
+      { id: 2, title: 'A Brief History of Time', author: 'Stephen Hawking', category: 'Science' },
+      { id: 3, title: 'The Art of War', author: 'Sun Tzu', category: 'Philosophy' }
+    ];
+
+    let searchHistory = [];
+
+    function displayBooks(filteredBooks) {
+      const grid = document.getElementById('bookGrid');
+      grid.innerHTML = '';
+      filteredBooks.forEach(book => {
+        const card = document.createElement('div');
+        card.className = 'book-card';
+        card.innerHTML = `<h3>${book.title}</h3><p><strong>Author:</strong> ${book.author}</p><p><strong>Category:</strong> ${book.category}</p>`;
+        grid.appendChild(card);
+      });
+    }
+
+    function handleSearch() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const category = document.getElementById('categorySelect').value;
+      let filtered = books.filter(book =>
+        book.title.toLowerCase().includes(searchTerm) ||
+        book.author.toLowerCase().includes(searchTerm)
+      );
+      if (category) {
+        filtered = filtered.filter(book => book.category === category);
+      }
+      displayBooks(filtered);
+
+      if (searchTerm && !searchHistory.includes(searchTerm)) {
+        searchHistory.unshift(searchTerm);
+        updateHistory();
+      }
+    }
+
+    function handleCategoryChange() {
+      handleSearch();
+    }
+
+    function updateHistory() {
+      const list = document.getElementById('historyList');
+      list.innerHTML = '';
+      searchHistory.forEach(term => {
+        const li = document.createElement('li');
+        li.textContent = term;
+        li.onclick = () => {
+          document.getElementById('searchInput').value = term;
+          handleSearch();
+        };
+        list.appendChild(li);
+      });
+    }
+
+    // Initial display
+    displayBooks(books);
+  </script>
+
+</body>
+</html>
